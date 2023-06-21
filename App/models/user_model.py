@@ -21,3 +21,4 @@ class UserModel(DB.Model):
 
     def __repr__(self):
         return "<User %r>"%self.name
+    

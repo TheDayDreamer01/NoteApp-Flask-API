@@ -19,7 +19,7 @@ AUTH_API : Blueprint = Blueprint("AUTH_API", __name__)
 
 
 @AUTH_API.route("/signup/", methods=["POST"])
-def SignUpUser():
+def signUpUser():
     
     name = request.form.get("name")
     email = request.form.get("email")
@@ -76,7 +76,7 @@ def SignUpUser():
 
 
 @AUTH_API.route("/signin/", methods=["POST"])
-def SignInUser():
+def signInUser():
     email = request.form["email"]
     password = request.form["password"]
 
@@ -107,7 +107,7 @@ def SignInUser():
 
 
 @AUTH_API.route("/signout/", methods=["POST"])
-def SignOutUser():
+def signOutUser():
     response = jsonify({
         "message" : "Successfully Logged Out",
         "status" : 200

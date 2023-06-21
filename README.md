@@ -23,7 +23,7 @@ The NoteApp API is a backend API developed in Flask, offering user authenticatio
 - SQLAlchemy: A powerful SQL toolkit and Object-Relational Mapping (ORM) library.
 - Bcrypt: A password-hashing library for secure password storage.
 - CORS (Cross-Origin Resource Sharing): Enables cross-origin resource sharing in the API.
-- SQLite3 or MySQL: Choose the database backend based on user preference.
+- SQLite3 or MySQL: Choose the database backend based on user preference (by default SQLite3 is used).
 
 ## Installation
 

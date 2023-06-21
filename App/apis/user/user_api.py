@@ -18,7 +18,7 @@ USER_API : Blueprint = Blueprint("USER_API", __name__)
 
 @USER_API.route("/<int:user_id>/", methods=["GET"])
 @jwt_required()
-def GetUserProfile(user_id : int):
+def getUserProfile(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
@@ -39,7 +39,7 @@ def GetUserProfile(user_id : int):
 
 @USER_API.route("/<int:user_id>/", methods=["POST"])
 @jwt_required()
-def UpdateUserPassword(user_id : int):
+def updateUserPassword(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
@@ -73,7 +73,7 @@ def UpdateUserPassword(user_id : int):
 
 @USER_API.route("/<int:user_id>/", methods=["PUT"])
 @jwt_required()
-def UpdateUserProfile(user_id : int):
+def updateUserProfile(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
@@ -112,7 +112,7 @@ def UpdateUserProfile(user_id : int):
 
 @USER_API.route("/<int:user_id>/", methods=["DELETE"])
 @jwt_required()
-def DeleteUser(user_id : int):
+def deleteUser(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
