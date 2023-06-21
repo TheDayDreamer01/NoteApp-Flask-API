@@ -14,7 +14,7 @@ from flask_jwt_extended import (
 NOTE_API : Blueprint = Blueprint("NOTE_API", __name__)
 
 
-@NOTE_API.route("/api/note/<int:user_id>/", methods=["GET"])
+@NOTE_API.route("/<int:user_id>/", methods=["GET"])
 def getNote(user_id : int):
 
     return jsonify({

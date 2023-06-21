@@ -16,9 +16,9 @@ from flask_jwt_extended import (
 USER_API : Blueprint = Blueprint("USER_API", __name__)
 
 
-@USER_API.route("/api/user/<int:user_id>/", methods=["GET"])
+@USER_API.route("/<int:user_id>/", methods=["GET"])
 @jwt_required()
-def GetUserInformation(user_id : int):
+def GetUserProfile(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
@@ -37,7 +37,7 @@ def GetUserInformation(user_id : int):
     }), 404
 
 
-@USER_API.route("/api/user/<int:user_id>/", methods=["POST"])
+@USER_API.route("/<int:user_id>/", methods=["POST"])
 @jwt_required()
 def UpdateUserPassword(user_id : int):
 
@@ -71,9 +71,9 @@ def UpdateUserPassword(user_id : int):
     }), 404
 
 
-@USER_API.route("/api/user/<int:user_id>/", methods=["PUT"])
+@USER_API.route("/<int:user_id>/", methods=["PUT"])
 @jwt_required()
-def UpdateUserInformation(user_id : int):
+def UpdateUserProfile(user_id : int):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(
@@ -110,7 +110,7 @@ def UpdateUserInformation(user_id : int):
     }), 404
 
 
-@USER_API.route("/api/user/<int:user_id>/", methods=["DELETE"])
+@USER_API.route("/<int:user_id>/", methods=["DELETE"])
 @jwt_required()
 def DeleteUser(user_id : int):
 
@@ -126,8 +126,6 @@ def DeleteUser(user_id : int):
             "message" : "Successfully Deleted User",
             "status" : 200
         })
-
-        response.set_cookie("access_token", "", expires=0)
         unset_jwt_cookies(response)
         unset_access_cookies(response)
 

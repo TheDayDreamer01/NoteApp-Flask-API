@@ -8,6 +8,7 @@ from flask import (
     request
 )
 from flask_jwt_extended import (
+    set_access_cookies,
     create_access_token,
     unset_jwt_cookies,
     unset_access_cookies
@@ -17,7 +18,7 @@ from flask_jwt_extended import (
 AUTH_API : Blueprint = Blueprint("AUTH_API", __name__)
 
 
-@AUTH_API.route("/api/signup/", methods=["POST"])
+@AUTH_API.route("/signup/", methods=["POST"])
 def SignUpUser():
     
     name = request.form.get("name")
@@ -30,28 +31,28 @@ def SignUpUser():
         return jsonify({
             "message": "User already exists",
             "status": 400,
-            "isAuthenticated": False
+            "auth": False
         }), 400
 
     if len(name) < 4:
         return jsonify({
             "message": "Name must contain at least 4 characters",
             "status": 400,
-            "isAuthenticated": False
+            "auth": False
         }), 400
 
     if not isValidEmail(email):
         return jsonify({
             "message": "Invalid Email Address",
             "status": 400,
-            "isAuthenticated": False
+            "auth": False
         }), 400
 
     if len(password) < 6:
         return jsonify({
             "message": "Password must contain at least 6 characters",
             "status": 400,
-            "isAuthenticated": False
+            "auth": False
         }), 400
 
     user = UserModel(
@@ -64,10 +65,9 @@ def SignUpUser():
     response = jsonify({
         "message": "Authorized Access",
         "status": 200,
-        "isAuthenticated": True
+        "auth": True
     })
-
-    response.set_cookie("access_token", access_token, httponly=True)
+    set_access_cookies(response, access_token)
 
     DB.session.add(user)
     DB.session.commit()
@@ -75,7 +75,7 @@ def SignUpUser():
     return response, 200
 
 
-@AUTH_API.route("/api/signin/", methods=["POST"])
+@AUTH_API.route("/signin/", methods=["POST"])
 def SignInUser():
     email = request.form["email"]
     password = request.form["password"]
@@ -88,31 +88,30 @@ def SignInUser():
             response = jsonify({
                 "message": "Authorized Access",
                 "status": 200,
-                "isAuthenticated": True
+                "auth": True
             })
-            response.set_cookie("access_token", access_token, httponly=True)
-
+            set_access_cookies(response, access_token)
             return response, 200
         
         return jsonify({
             "message": "Incorrect Password",
             "status": 400,
-            "isAuthenticated": False
+            "auth": False
         }), 400
+    
     return jsonify({
         "message": "User does not Exists",
-        "status": 200,
-        "isAuthenticated": False
-    }), 400 
+        "status": 404,
+        "auth": False
+    }), 404
 
 
-@AUTH_API.route("/api/logout/", methods=["POST"])
-def LogoutUser():
+@AUTH_API.route("/signout/", methods=["POST"])
+def SignOutUser():
     response = jsonify({
         "message" : "Successfully Logged Out",
         "status" : 200
     })
-    response.set_cookie("access_token", "", expires=0)
     unset_jwt_cookies(response)
     unset_access_cookies(response)
 
