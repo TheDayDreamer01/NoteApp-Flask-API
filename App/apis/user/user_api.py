@@ -100,7 +100,7 @@ def updateUserProfile(user_id : int):
     
         DB.session.commit()
         return jsonify({
-            "message" : "Successfully Update Profile",
+            "message" : "Successfully Updated Profile",
             "status" : 200
         }), 200
 

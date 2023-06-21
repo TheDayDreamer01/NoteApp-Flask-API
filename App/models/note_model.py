@@ -10,7 +10,7 @@ class NoteModel(DB.Model):
     user_id = DB.Column(DB.Integer, DB.ForeignKey("users.id"))
 
     title = DB.Column(DB.String(100))
-    note = DB.Column(DB.Text)
+    body = DB.Column(DB.Text)
     date = DB.Column(
         DB.DateTime,
         default = func.now()
@@ -25,5 +25,5 @@ class NoteModel(DB.Model):
             "id" : self.id,
             "title" : self.title,
             "date" : self.date,
-            "note" : self.note
+            "body" : self.body
         }

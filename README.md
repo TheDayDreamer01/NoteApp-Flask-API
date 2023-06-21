@@ -64,22 +64,22 @@ The NoteApp API is a backend API developed in Flask, offering user authenticatio
 To interact with the NoteApp API, you can use various HTTP methods (GET, POST, PUT, DELETE) and the provided endpoints. Here are some example endpoints:
 
 - User Authentication:
-  - `POST /api/auth/signin`: Sign in with email and password.
-  - `POST /api/auth/signup`: Sign up with username, email and password.
-  - `GET /api/auth/signout`: Sign out the current user.
+  - `POST /api/auth/signin/`: Sign in with email and password.
+  - `POST /api/auth/signup/`: Sign up with username, email and password.
+  - `GET /api/auth/signout/`: Sign out the current user.
 
 - User Manipulation:
-  - `GET /api/user/{user_id}`: Retrieve user information.
-  - `PUT /api/user/{user_id}`: Update user profile.
-  - `PUT /api/user/{user_id}/password`: Update user password.
-  - `DELETE /api/user/{user_id}`: Delete user account.
+  - `GET /api/user/{user_id}/`: Retrieve user information.
+  - `PUT /api/user/{user_id}/`: Update user profile.
+  - `PUT /api/user/{user_id}/`: Update user password.
+  - `DELETE /api/user/{user_id}/`: Delete user account.
 
 - Note Operations:
-  - `GET /api/note`: Retrieve all notes.
-  - `POST /api/note`: Create a new note.
-  - `GET /api/note/{note_id}`: Retrieve a specific note.
-  - `PUT /api/note/{note_id}`: Update a specific note.
-  - `DELETE /api/note/{note_id}`: Delete a specific note.
+  - `GET /api/note/`: Retrieve all notes.
+  - `POST /api/note/`: Create a new note.
+  - `GET /api/note/{note_id}/{title}/`: Retrieve a specific note.
+  - `PUT /api/note/{note_id}/{title}/`: Update a specific note.
+  - `DELETE /api/note/{note_id}/{title}/`: Delete a specific note.
 
 Please refer to the API documentation or explore the codebase for more detailed information on the available endpoints and their usage.
 
