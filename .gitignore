@@ -1,2 +1,12 @@
 env
 instance
+App/__pycache__
+App/apis/__pycache__
+
+App/models/__pycache__
+
+App/utils/__pycache__
+
+App/apis/note/__pycache__
+App/apis/auth/__pycache__
+App/apis/user/__pycache__

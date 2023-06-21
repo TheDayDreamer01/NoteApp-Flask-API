@@ -6,7 +6,7 @@ app : Flask = create_note_app()
 
 if __name__ == "__main__":
     # Development Environment
-    app.run(debug=True, host="0.0.0.0")
+    # app.run(debug=True, host="0.0.0.0")
     
     # Production Environment
-    # app.run()
+    app.run()

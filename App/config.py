@@ -19,6 +19,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     
     SQLALCHEMY_DATABASE_URI : str = f"sqlite:///{DB_NAME}.sqlite3"
-    # SQLALCHEMY_DATABASE_URI : str = f"mysql://root:data@localhost:3306/{DB_NAME}"
+    # SQLALCHEMY_DATABASE_URI : str = f"mysql://<user>:<password>@localhost:3306/{DB_NAME}"
 
     JWT_EXPIRATION_DELTA : timedelta = timedelta(days=1)
