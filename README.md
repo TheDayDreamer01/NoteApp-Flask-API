@@ -1,4 +1,4 @@
-# NoteApp Flask API
+# NoteApp API
 
 The NoteApp API is a backend API developed in Flask, offering user authentication, user manipulation, and CRUD operations for notes. It is designed to be versatile and can be integrated into mobile, GUI, and web applications.
 
