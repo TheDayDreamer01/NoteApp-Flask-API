@@ -1,4 +1,3 @@
-
 from App.utils.regexps_util import isValidEmail
 from App.models import UserModel
 from App.app import DB, BCRYPT
@@ -11,7 +10,9 @@ from flask_jwt_extended import (
     set_access_cookies,
     create_access_token,
     unset_jwt_cookies,
-    unset_access_cookies
+    unset_access_cookies,
+    jwt_required,
+    get_jwt_identity
 )
 
 
@@ -107,12 +108,22 @@ def signInUser():
 
 
 @AUTH_API.route("/signout/", methods=["POST"])
+@jwt_required()
 def signOutUser():
-    response = jsonify({
-        "message" : "Successfully Logged Out",
-        "status" : 200
-    })
-    unset_jwt_cookies(response)
-    unset_access_cookies(response)
 
-    return response
+    access_token = get_jwt_identity()
+    user : UserModel = UserModel.query.filter_by(email = access_token).first()
+    if user:
+
+        response = jsonify({
+            "message" : "Successfully Logged Out",
+            "status" : 200
+        })
+        unset_jwt_cookies(response)
+        unset_access_cookies(response)
+        return response, 200 
+
+    return jsonify({
+        "message":"Not Authorized to perform this action",
+        "status" : 404
+    }), 404

@@ -39,16 +39,16 @@ def getNote():
     }), 404
 
 
-@NOTE_API.route("/<int:user_id>/<title>/", methods=["GET"])
+@NOTE_API.route("/<int:note_id>/<title>/", methods=["GET"])
 @jwt_required()
-def getUserNote(user_id : int, title : str):
+def getUserNote(note_id : int, title : str):
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
     if user:
         note : NoteModel = NoteModel.query.filter_by(
             user_id = user.id,
-            id = user_id,
+            id = note_id,
             title = title
         ).first()
 
@@ -78,6 +78,7 @@ def createUserNote():
         if not note:
 
             note = NoteModel(
+                user_id = user.id,
                 title = title,
                 body = body
             )
@@ -103,19 +104,19 @@ def createUserNote():
     }), 404
 
 
-@NOTE_API.route("/<int:user_id>/<title>/", methods=["PUT"])
+@NOTE_API.route("/<int:note_id>/<title>/", methods=["PUT"])
 @jwt_required()
-def updateUserNote(user_id : int, title : str):
+def updateUserNote(note_id : int, title : str):
     
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
     if user:
         note : NoteModel = NoteModel.query.filter_by(
-            id = user_id,
+            id = note_id,
             user_id = user.id,
             title = title
-        )
+        ).first()
         note.title = request.get_json()["title"]
         note.body = request.get_json()["body"]
         DB.session.commit()
@@ -132,9 +133,9 @@ def updateUserNote(user_id : int, title : str):
     }), 404
 
 
-@NOTE_API.route("/<int:user_id>/<title>/", methods=["DELETE"])
+@NOTE_API.route("/<int:note_id>/<title>/", methods=["DELETE"])
 @jwt_required()
-def deleteUserNote(user_id : int, title : str):
+def deleteUserNote(note_id : int, title : str):
 
     access_token = get_jwt_identity()
     user : UserModel = UserModel.query.filter_by(email=access_token).first()
@@ -142,7 +143,7 @@ def deleteUserNote(user_id : int, title : str):
     if user:
         note : NoteModel = NoteModel.query.filter_by(
             user_id = user.id,
-            id = user_id,
+            id = note_id,
             title = title
         ).first()
 
