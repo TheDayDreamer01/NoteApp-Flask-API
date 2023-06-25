@@ -14,12 +14,12 @@ BCRYPT : Bcrypt = Bcrypt()
 def create_note_app(config_class : Config = Config) -> Flask:
 
     note_app : Flask = Flask(__name__)
-    CORS(note_app)
-
     note_app.config.from_object(config_class)
+    
     JWT.init_app(note_app)
     DB.init_app(note_app)
     BCRYPT.init_app(note_app)
+    CORS(note_app)
 
 
     from App.apis.auth import AUTH_API

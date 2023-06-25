@@ -64,7 +64,7 @@ def signUpUser():
         )
 
         access_token = create_access_token(identity=email)
-        refresh_token = refresh_token(identity = email)
+        refresh_token = create_refresh_token(identity = email)
         response = jsonify({
             "auth": True,
             "access_token" : access_token,
@@ -76,10 +76,10 @@ def signUpUser():
 
         DB.session.add(user)
         DB.session.commit()
-    
+
     except Exception as e:
         return jsonify({
-            "error" : e,
+            "error" : e, 
             "message" : "Internal Server Error",
             "status" : 500
         }), 500
@@ -157,8 +157,9 @@ def refreshAccessToken():
             set_access_cookies(response, new_token)
             return response, 200
     
-    except:
+    except Exception as e:
         return jsonify({
+            "error" : e,
             "message" : "Internal Server Error",
             "status" : 500
         }), 500
