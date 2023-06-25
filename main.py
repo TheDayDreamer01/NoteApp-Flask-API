@@ -1,3 +1,8 @@
+"""
+NoteApp API 
+Developed by Lirae Que Data
+"""
+
 from App import create_note_app
 from flask import Flask
 

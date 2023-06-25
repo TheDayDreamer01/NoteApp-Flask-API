@@ -18,20 +18,29 @@ NOTE_API : Blueprint = Blueprint("NOTE_API", __name__)
 @NOTE_API.route("/", methods=["GET"])
 @jwt_required()
 def getNote():
-    access_token = get_jwt_identity()
-    user : UserModel = UserModel.query.filter_by(email=access_token).first()
+    try:
+        access_token = get_jwt_identity()
+        user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
-    if user:
-        notes : NoteModel = NoteModel.query.filter_by(user_id=user.id).all()
-        note_list : list = []
+        if user:
+            notes : NoteModel = NoteModel.query.filter_by(user_id=user.id).all()
+            note_list : list = []
 
-        for note in notes:
-            note_list.append(note.toObject())
+            if notes:
+                for note in notes:
+                    note_list.append(note.toObject())
 
+            return jsonify({
+                "notes": note_list,
+                "status" : 200
+            }), 200
+        
+    except Exception as e:
         return jsonify({
-            "notes": note_list,
-            "status" : 200
-        }), 200
+            "error" : e,
+            "message" : "Internal Server Error",
+            "status" : 500
+        }), 500
 
     return jsonify({
         "message": "User does not exist",
@@ -42,20 +51,28 @@ def getNote():
 @NOTE_API.route("/<int:note_id>/<title>/", methods=["GET"])
 @jwt_required()
 def getUserNote(note_id : int, title : str):
-    access_token = get_jwt_identity()
-    user : UserModel = UserModel.query.filter_by(email=access_token).first()
+    try:
+        access_token = get_jwt_identity()
+        user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
-    if user:
-        note : NoteModel = NoteModel.query.filter_by(
-            user_id = user.id,
-            id = note_id,
-            title = title
-        ).first()
+        if user:
+            note : NoteModel = NoteModel.query.filter_by(
+                user_id = user.id,
+                id = note_id,
+                title = title
+            ).first()
 
+            return jsonify({
+                "note" : note.toObject(),
+                "status" : 200
+            }), 200
+        
+    except Exception as e:
         return jsonify({
-            "note" : note.toObject(),
-            "status" : 200
-        }), 200
+            "error" : e,
+            "message" : "Internal Server Error",
+            "status" : 500
+        }), 500
 
     return jsonify({
         "message": "User does not exist",
@@ -107,24 +124,39 @@ def createUserNote():
 @NOTE_API.route("/<int:note_id>/<title>/", methods=["PUT"])
 @jwt_required()
 def updateUserNote(note_id : int, title : str):
-    
-    access_token = get_jwt_identity()
-    user : UserModel = UserModel.query.filter_by(email=access_token).first()
+    try:
+        access_token = get_jwt_identity()
+        user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
-    if user:
-        note : NoteModel = NoteModel.query.filter_by(
-            id = note_id,
-            user_id = user.id,
-            title = title
-        ).first()
-        note.title = request.get_json()["title"]
-        note.body = request.get_json()["body"]
-        DB.session.commit()
+        if user:
+            data = request.get_json()
+            note : NoteModel = NoteModel.query.filter_by(
+                id = note_id,
+                user_id = user.id,
+                title = title
+            ).first()
 
+            if not note:
+                return jsonify({
+                    "message" : "Note does not Exists",
+                    "status" : 404
+                }), 404
+
+            note.title = data["title"]
+            note.body = data["body"]
+            DB.session.commit()
+
+            return jsonify({
+                "message" : "Successfully Updated Note",
+                "status" : 200
+            }), 200
+        
+    except Exception as e:
         return jsonify({
-            "message" : "Successfully Updated Note",
-            "status" : 200
-        }), 200
+            "error" : e,
+            "message" : "Internal Server Error",
+            "status" : 500
+        }), 500
 
 
     return jsonify({
@@ -136,24 +168,37 @@ def updateUserNote(note_id : int, title : str):
 @NOTE_API.route("/<int:note_id>/<title>/", methods=["DELETE"])
 @jwt_required()
 def deleteUserNote(note_id : int, title : str):
+    try:
+        access_token = get_jwt_identity()
+        user : UserModel = UserModel.query.filter_by(email=access_token).first()
 
-    access_token = get_jwt_identity()
-    user : UserModel = UserModel.query.filter_by(email=access_token).first()
+        if user:
+            note : NoteModel = NoteModel.query.filter_by(
+                user_id = user.id,
+                id = note_id,
+                title = title
+            ).first()
 
-    if user:
-        note : NoteModel = NoteModel.query.filter_by(
-            user_id = user.id,
-            id = note_id,
-            title = title
-        ).first()
+            if not note:
+                return jsonify({
+                    "message" : "Note does not Exists",
+                    "status" : 404
+                }), 404
 
-        DB.session.delete(note)
-        DB.session.commit()
+            DB.session.delete(note)
+            DB.session.commit()
 
+            return jsonify({
+                "message" : "Successfully Deleted Note",
+                "status" : 200
+            }), 200
+        
+    except Exception as e:
         return jsonify({
-            "message" : "Successfully Deleted Note",
-            "status" : 200
-        }), 200
+            "error" : e,
+            "message" : "Internal Server Error",
+            "status" : 500
+        }), 500
 
     return jsonify({
         "message": "User does not exist",

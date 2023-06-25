@@ -1,6 +1,5 @@
 from App.app import DB
 from sqlalchemy.sql import func
-from flask import jsonify
 
 
 class NoteModel(DB.Model):
@@ -16,14 +15,16 @@ class NoteModel(DB.Model):
         default = func.now()
     )
 
-    def __repr__(self):
-        return "<Note %r>"%self.title
-    
-        
-    def toObject(self):
+    def toObject(self) -> dict:
         return {
             "id" : self.id,
             "title" : self.title,
             "date" : self.date,
             "body" : self.body
         }
+    
+
+    def __repr__(self) -> str:
+        return "<Note %r>"%self.title
+    
+        
