@@ -19,6 +19,15 @@ class UserModel(DB.Model):
     note = DB.relationship("NoteModel")
 
 
-    def __repr__(self):
+    def toObject(self) -> dict:
+        return {
+            "id" : self.id, 
+            "name" : self.name,
+            "email" : self.email,
+            "bio" : self.bio
+        }   
+    
+
+    def __repr__(self) -> str:
         return "<User %r>"%self.name
     

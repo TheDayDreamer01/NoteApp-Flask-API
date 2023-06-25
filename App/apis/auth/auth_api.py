@@ -1,4 +1,4 @@
-from App.utils.regexps_util import isValidEmail
+from App.utils import isValidEmail
 from App.models import UserModel
 from App.app import DB, BCRYPT
 from flask import (
