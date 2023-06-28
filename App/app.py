@@ -34,7 +34,7 @@ def create_note_app(environment) -> Flask:
         SignOutRefreshResource,
         RefreshTokenResource
     )   
-    from App.apis.note import NoteResource
+    from App.apis.note import NoteResource, UserNoteResource
     from App.apis.user import UserResource
 
 
@@ -45,6 +45,7 @@ def create_note_app(environment) -> Flask:
     API.add_resource(RefreshTokenResource, "/api/auth/refresh")
 
     API.add_resource(NoteResource, "/api/note/<int:user_id>")
+    API.add_resource(UserNoteResource, "/api/note/<int:note_id>/<note_title>/<int:user_id>")
 
     API.add_resource(UserResource, "/api/user/<int:user_id>")
     

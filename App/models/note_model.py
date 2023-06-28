@@ -16,6 +16,9 @@ class NoteModel(DB.Model):
         default = datetime.now()
     )
 
+    def __repr__(self) -> str:
+        return "<Note %r>"%self.title
+    
     def toObject(self) -> dict:
         return {
             "id" : self.id,
@@ -24,9 +27,12 @@ class NoteModel(DB.Model):
             "body" : self.body
         }
 
-
-    def __repr__(self) -> str:
-        return "<Note %r>"%self.title
+    @staticmethod
+    def fromObject(data) -> "NoteModel":
+        return NoteModel(
+            title = data["title"],
+            body = data["body"]
+        )
     
 
 class NoteSchema(MALLOW.Schema):
