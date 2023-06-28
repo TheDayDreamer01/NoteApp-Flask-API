@@ -1,4 +1,5 @@
-from App.app import DB
+from flask_marshmallow import fields
+from App.app import DB, MALLOW
 from sqlalchemy.sql import func
 
 
@@ -31,3 +32,16 @@ class UserModel(DB.Model):
     def __repr__(self) -> str:
         return "<User %r>"%self.name
     
+
+class UserSchema(MALLOW.Schema):
+
+    class Meta:
+        model : UserModel = UserModel
+
+    name = fields.String()
+    email = fields.String()
+    password = fields.String()
+    bio = fields.String()
+
+
+user_schema = UserSchema()

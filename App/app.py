@@ -1,41 +1,48 @@
 from flask import Flask
+from flask_restful import Api
+from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from App.config import Config
 
 
-JWT : JWTManager = JWTManager()
-DB : SQLAlchemy = SQLAlchemy()
 BCRYPT : Bcrypt = Bcrypt()
+DB : SQLAlchemy = SQLAlchemy()
+JWT : JWTManager = JWTManager()
+MALLOW : Marshmallow = Marshmallow()
 
 
-def create_note_app(config_class : Config = Config) -> Flask:
+def create_note_app(environment) -> Flask:
 
     note_app : Flask = Flask(__name__)
-    note_app.config.from_object(config_class)
+    note_app.config.from_object(environment)
     
+    API = Api(note_app)
     JWT.init_app(note_app)
     DB.init_app(note_app)
     BCRYPT.init_app(note_app)
+    MALLOW.init_app(note_app)
     CORS(note_app)
 
 
-    from App.apis.auth import AUTH_API
-    from App.apis.note import NOTE_API
-    from App.apis.user import USER_API
+    from App.apis.auth import (
+        SignUpResource,
+        SignInResource,
+        SignOutResource
+    )   
+    from App.apis.note import NoteResource
+    from App.apis.user import UserResource
 
+
+    API.add_resource(SignUpResource, "/api/auth/signup")
+    API.add_resource(SignInResource, "/api/auth/signin")
+    API.add_resource(SignOutResource, "/api/auth/signout")
+
+    API.add_resource(NoteResource, "/api/note/<int:user_id>")
+
+    API.add_resource(UserResource, "/api/user/<int:user_id>")
     
-    note_app.register_blueprint(AUTH_API, url_prefix="/api/auth")
-    note_app.register_blueprint(NOTE_API, url_prefix="/api/note")
-    note_app.register_blueprint(USER_API, url_prefix="/api/user")
-
-
-    from App.models import (
-        UserModel,
-        NoteModel
-    )
 
     with note_app.app_context():
         DB.create_all()

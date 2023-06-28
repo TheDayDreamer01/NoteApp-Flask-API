@@ -1,2 +1,2 @@
-from App.models.note_model import NoteModel
-from App.models.user_model import UserModel
+from App.models.note_model import *
+from App.models.user_model import *
