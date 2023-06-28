@@ -1,4 +1,4 @@
-from flask_marshmallow import fields
+from marshmallow import fields
 from App.app import DB, MALLOW
 from sqlalchemy.sql import func
 
