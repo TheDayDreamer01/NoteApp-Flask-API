@@ -329,12 +329,3 @@ In this section, we will briefly touch upon advanced topics related to Flask-JWT
 - Token Freshness: Checking token freshness for sensitive operations
 - Token Location: Configuring token location in requests
 
----
-
-Congratulations! You have completed the comprehensive tutorial on Flask-JWT-Extended. You should now have a good understanding of how to secure your API endpoints using JSON Web Tokens, handle authentication and token generation, protect routes, customize JWT handling, refresh and revoke tokens, handle JWT errors, and explore advanced topics. Happy coding!
-
-Please note that this tutorial provides a basic overview of Flask-JWT-Extended and there is much more you can explore and learn. Refer to the official Flask-JWT-Extended documentation for more in-depth information and examples.
-
----
-
-Make sure to save the above content in a file with the `.md` extension, such as `flask_jwt_extended_tutorial.md`, and it will be ready to be used as a GitHub Markdown file.

@@ -8,7 +8,7 @@ class UserModel(DB.Model):
     
     id = DB.Column(DB.Integer, primary_key = True)
 
-    name = DB.Column(DB.String(100), nullable=False)
+    username = DB.Column(DB.String(100), nullable=False)
     email = DB.Column(DB.String(100), nullable=False, unique=True)
     password = DB.Column(DB.String(100), nullable=False)
     date = DB.Column(
@@ -19,26 +19,34 @@ class UserModel(DB.Model):
 
     note = DB.relationship("NoteModel")
 
+    def __repr__(self) -> str:
+        return "<User %r>"%self.username
+
 
     def toObject(self) -> dict:
         return {
             "id" : self.id, 
-            "name" : self.name,
+            "username" : self.username,
             "email" : self.email,
             "bio" : self.bio
         }   
     
+    @staticmethod
+    def fromObject(data) -> "UserModel":
+        return UserModel(
+            username = data["username"],   
+            email = data["email"],
+            password = data["password"],
+            bio = data["bio"]
+        )
 
-    def __repr__(self) -> str:
-        return "<User %r>"%self.name
-    
 
 class UserSchema(MALLOW.Schema):
 
     class Meta:
         model : UserModel = UserModel
 
-    name = fields.String()
+    username = fields.String()
     email = fields.String()
     password = fields.String()
     bio = fields.String()
