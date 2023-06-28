@@ -1,5 +1,6 @@
 from App.app import DB
 from App.models import NoteModel, UserModel
+from flask import jsonify
 from flask_restful import (
     Resource,
     reqparse,
@@ -11,9 +12,29 @@ from flask_jwt_extended import (
 )
 
 
-
 class NoteResource(Resource):
-    pass
+    def __init__(self):
+        pass
+
+
+    @jwt_required
+    def get(self, user_id : int):
+        pass
+
+
+    @jwt_required
+    def post(self, user_id : int):
+        pass
+
+
+    @jwt_required
+    def put(self, user_id : int):
+        pass
+
+
+    @jwt_required
+    def delete(self, user_id : int):
+        pass
 
 
 

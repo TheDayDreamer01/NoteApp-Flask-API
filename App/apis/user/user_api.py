@@ -7,16 +7,36 @@ from flask_restful import (
     abort
 )
 from flask_jwt_extended import (
-    jwt_required,
-    unset_jwt_cookies,
-    get_jwt_identity
+    get_jwt_identity,
+    jwt_required
 )
 
 
-
 class UserResource(Resource):
+    def __init__(self):
+        pass
+
+
+    @jwt_required
+    def get(self, user_id : int):
+        pass
     
-    pass
+    
+    @jwt_required
+    def post(self, user_id : int):
+        pass
+
+    
+    @jwt_required
+    def put(self, user_id : int):
+        pass
+
+
+    @jwt_required
+    def delete(self, user_id : int):
+        pass
+
+
 
 
 # @USER_API.route("/<int:user_id>/", methods=["GET"])
