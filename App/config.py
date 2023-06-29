@@ -1,5 +1,5 @@
-from datetime import timedelta
 from App.utils import secretKeyGenerator
+from datetime import timedelta
 
 
 DB_NAME : str = "note_db"
@@ -16,8 +16,7 @@ class ProductionEnvironment:
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     SQLALCHEMY_DATABASE_URI : str = f"mysql://<user>:<password>@localhost:3306/{DB_NAME}"
 
-    JWT_ACCESS_TOKEN_EXPIRES : timedelta = timedelta(days = 1)
-
+    JWT_EXPIRATION_DELTA : timedelta = timedelta(days = 1)
 
 
 class DevelopmentEnvironment:
@@ -31,7 +30,7 @@ class DevelopmentEnvironment:
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     SQLALCHEMY_DATABASE_URI : str = f"sqlite:///{DB_NAME}.sqlite3"
 
-    JWT_ACCESS_TOKEN_EXPIRES : timedelta = timedelta(days = 1)
+    JWT_EXPIRATION_DELTA : timedelta = timedelta(days = 1)
 
 
 class TestEnvironment:

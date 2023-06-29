@@ -2,8 +2,7 @@ from App.models import UserModel, TokenModel
 from App.app import DB, BCRYPT
 from datetime import timedelta
 
-from flask import jsonify
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
 from flask_jwt_extended import (
     create_refresh_token,
     create_access_token,
@@ -27,21 +26,19 @@ class SignInResource(Resource):
         user : UserModel = UserModel.query.filter_by(email = data["email"]).first()
         if user:
             if not BCRYPT.check_password_hash(user.password, data["password"]):
-                return jsonify({"message": "Incorrect Password"}), 401
+                return {"message": "Incorrect Password"}, 401
             
-            access_token = create_access_token(
-                identity=user.email, expires_delta=timedelta(day=1))  
-            refresh_token = create_refresh_token(
-                identity=user.email, expires_delta=timedelta(day=1))  
+            access_token = create_access_token(identity=user.email)  
+            refresh_token = create_refresh_token(identity=user.email)  
             
-            return jsonify({
+            return {
                 "message" : "User logged in successfully",
                 "access_token" : access_token,
                 "refresh_token" : refresh_token,
                 "user" : user.toObject()
-            }), 201
+            }, 200
             
-        return jsonify({"message" : "User does not Exists"}), 404
+        return {"message" : "User does not Exists"}, 404
             
 
 class SignUpResource(Resource):
@@ -52,17 +49,17 @@ class SignUpResource(Resource):
         self.parser.add_argument("email", type=str, required=True)
         self.parser.add_argument("password", type=str, required=True)
         
-    def get(self) : return "HI"
+
     def post(self):
         data = self.parser.parse_args()
 
         user : UserModel = UserModel.query.filter_by(
             username = data["username"],
-            email = data["email"],
+            email = data["email"]
         ).first()
 
-        if not user:    
-            return jsonify({"message" : "User already exists"}), 400
+        if user:    
+            return abort(409, message="User already exists") 
 
         user = UserModel(
             username = data["username"],
@@ -70,36 +67,34 @@ class SignUpResource(Resource):
             password = BCRYPT.generate_password_hash(data["password"])
         )
 
-        access_token = create_access_token(
-            identity=user.email, expires_delta=timedelta(day=1))  
-        refresh_token = create_refresh_token(
-            identity=user.email, expires_delta=timedelta(day=1))  
+        access_token = create_access_token(identity=data["email"])
+        refresh_token = create_refresh_token(identity=data["email"])
         DB.session.add(user)
         DB.session.commit()
 
-        return jsonify({
+        return {
             "message" : "User created successfully",
             "access_token" : access_token,
             "refresh_token" : refresh_token,
             "user" : user.toObject()
-        }), 201
+        }, 201
    
         
 class SignOutResource(Resource):
 
-    @jwt_required
+    @jwt_required(optional=True)
     def post(self):
-        try:
-            access_token = get_jwt()
-
+        try:    
+            access_token = get_jwt()["jti"]
             token : TokenModel = TokenModel(token = access_token)
+
             DB.session.add(token)
             DB.session.commit()
 
-            return jsonify({"message" : "Successfully logged out"}), 200
+            return {"message" : "Successfully logged out"}, 200
     
         except Exception as e:
-            return jsonify({"message" : e}), 500
+            return {"message" : e}, 500
     
 
 class SignOutRefreshResource(Resource):
@@ -107,16 +102,15 @@ class SignOutRefreshResource(Resource):
     @jwt_required(refresh=True)
     def post(self):
         try:
-            access_token = get_jwt()
-
+            access_token = get_jwt()["jti"]
             token : TokenModel = TokenModel(token = access_token)
+            
             DB.session.add(token)
             DB.session.commit()
-
-            return jsonify({"message" : "Successfully logged out"}), 200
+            return {"message" : "Successfully logged out"}, 200
     
         except Exception as e:
-            return jsonify({"message" : e}), 500
+            return {"message" : e}, 500
         
 
 class RefreshTokenResource(Resource):
@@ -124,7 +118,6 @@ class RefreshTokenResource(Resource):
     @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
-        new_token = create_access_token(
-            identity=current_user, expires_delta=timedelta(day=1))
+        new_token = create_access_token(identity=current_user)
         
-        return jsonify({"access_token" : new_token}), 200
+        return {"access_token" : new_token}, 200

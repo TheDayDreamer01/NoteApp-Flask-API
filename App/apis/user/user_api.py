@@ -1,7 +1,6 @@
-from App.models import UserModel, user_model
+from App.models import UserModel, user_schema
 from App.app import DB, BCRYPT
 
-from flask import jsonify
 from flask_jwt_extended import jwt_required
 from flask_restful import (
     Resource,
@@ -19,37 +18,37 @@ class UserResource(Resource):
         self.user_parser.add_argument("username", type=str)
         self.user_parser.add_argument("bio", type=str)
 
-
-    @jwt_required
+    @jwt_required() 
     def get(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
-        return user_model.dump(user), 200
+        schema = user_schema.dump(user)
+        return {"user" : schema }, 200
+
     
-    
-    @jwt_required
+    @jwt_required()
     def post(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return jsonify({"message" : "User does not Exists"}), 404
+            return {"message" : "User does not Exists"}, 404
         
         data = self.password_parser.parse_args()
 
         if not BCRYPT.check_password_hash(user.password, data["old_password"]):
-            return jsonify({"message" : "Incorrect Password"}),400
+            return {"message" : "Incorrect Password"}, 400
         
         user.password = BCRYPT.generate_password_hash(data["new_password"])
         DB.session.commit()
-        return jsonify({"message" : "Updated password"}), 200
+        return {"message" : "Updated password"}, 200
         
     
-    @jwt_required
+    @jwt_required()
     def put(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
         data = self.user_parser.parse_args()
 
@@ -58,16 +57,16 @@ class UserResource(Resource):
         
         user.bio = data["bio"]
         DB.session.commit()
-        return jsonify({"message" : "Updated Profile"}), 200
+        return {"message" : "Updated Profile"}, 200
 
 
-    @jwt_required
+    @jwt_required()
     def delete(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
         DB.session.delete(user)
         DB.session.commit()
-        return jsonify({"message" : f"User '{user.username}' successfully deleted"}), 200
+        return {"message" : f"User '{user.username}' successfully deleted"}, 200
 

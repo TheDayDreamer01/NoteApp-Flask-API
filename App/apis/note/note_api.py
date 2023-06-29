@@ -6,7 +6,6 @@ from App.models import (
     note_schema
 )
 
-from flask import jsonify
 from flask_jwt_extended import jwt_required
 from flask_restful import (
     Resource,
@@ -15,71 +14,85 @@ from flask_restful import (
 
 
 class NoteResource(Resource):
-    @jwt_required
-    def get(self, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id=user_id).first()
-        if not user:
-            return jsonify({"User does not exists"}), 404
-        
-        note : NoteModel = NoteModel.query.filter_by(user_id = user_id).all()
-        return notes_schema.dump(note)
-    
-
-class UserNoteResource(Resource):
     def __init__(self):
-
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("title", type=str)
         self.parser.add_argument("body", type=str)
 
 
-    @jwt_required
-    def get(self, note_id : int, note_title, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
+    @jwt_required()
+    def get(self, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"User does not exists"}, 404
         
-        note : NoteModel = NoteModel.query.filter_by(
-            id = note_id, user_id = user_id, title = note_title
-        ).first()
-
+        note : NoteModel = NoteModel.query.filter_by(user_id = user_id).all()
         if not note:
-            return jsonify({"message" : "Note does not exists"}), 404
+            return {}
         
-        return note_schema.dump(note), 200
-        
+        return notes_schema.dump(note)
 
 
-    @jwt_required
-    def post(self, note_id : int, note_title, user_id : int):
+    @jwt_required()
+    def post(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
+        data = self.parser.parse_args()
+
         note : NoteModel = NoteModel.query.filter_by(
-            id = note_id, user_id = user_id, title = note_title
-        ).first()
-        if note:
-            return jsonify({"message" : "Note already exists"}), 404
+            user_id = user_id, title = data["title"] ).first()
         
-        note = NoteModel.fromObject(self.parser.parse_args())
+        if note:
+            return {"message" : "Note already exists"}, 404
+        
+        note = NoteModel(
+            user_id = user_id,
+            title = data["title"],
+            body = data["body"]
+        )   
         DB.session.add(note)
         DB.session.commit()
     
-        return jsonify({"message" : "Created successfully"}), 200 
+        return {"note" : note.toObject()}, 200 
     
 
-    @jwt_required
+class UserNoteResource(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("title", type=str)
+        self.parser.add_argument("body", type=str)
+
+
+    @jwt_required()
+    def get(self, note_id : int, note_title, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id = user_id).first()
+        if not user:
+            return {"message" : "User does not exists"}, 404
+        
+        note : NoteModel = NoteModel.query.filter_by(
+            id = note_id, user_id = user_id, title = note_title
+        ).first()
+
+        if not note:
+            return {"message" : "Note does not exists"}, 404
+        
+        schema = note_schema.dump(note)
+        return {"note" : schema}, 200
+    
+
+    @jwt_required()
     def put(self, note_id : int, note_title, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
         ).first()
         if not note:
-            return jsonify({"message" : "Note does not exists"}), 404
+            return {"message" : "Note does not exists"}, 404
         
         data = self.parser.parse_args()
         
@@ -90,22 +103,22 @@ class UserNoteResource(Resource):
             note.body = data["body"]
 
         DB.session.commit()
-        return jsonify({"message" : "Update note successfully"}), 200
+        return {"message" : "Update note successfully"}, 200
 
 
-    @jwt_required
+    @jwt_required()
     def delete(self, note_id : int, note_title, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return jsonify({"message" : "User does not exists"}), 404
+            return {"message" : "User does not exists"}, 404
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
         ).first()
         if not note:
-            return jsonify({"message" : "Note does not exists"}), 404
+            return {"message" : "Note does not exists"}, 404
         
         DB.session.delete(note)
         DB.session.commit()
-        return jsonify({"message" : "Successfully deleted note"}), 200
+        return {"message" : "Successfully deleted note"}, 200
         

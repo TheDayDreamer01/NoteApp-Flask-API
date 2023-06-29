@@ -1,7 +1,6 @@
 from marshmallow import fields
 from App.app import DB, MALLOW
-from datetime import datetime
-
+from sqlalchemy.sql import func
 
 class NoteModel(DB.Model):
     __tablename__ = "notes"
@@ -12,9 +11,14 @@ class NoteModel(DB.Model):
     title = DB.Column(DB.String(100))
     body = DB.Column(DB.Text)
     date = DB.Column(
-        DB.Date,
-        default = datetime.now()
+        DB.DateTime(timezone=True),
+        default = func.now()
     )
+
+    def __init__(self, user_id : int, title : str, body : str):
+        self.user_id = user_id
+        self.title = title
+        self.body = body
 
     def __repr__(self) -> str:
         return "<Note %r>"%self.title
@@ -22,18 +26,12 @@ class NoteModel(DB.Model):
     def toObject(self) -> dict:
         return {
             "id" : self.id,
+            "user_id" : self.user_id, 
             "title" : self.title,
             "date" : self.date,
             "body" : self.body
         }
 
-    @staticmethod
-    def fromObject(data) -> "NoteModel":
-        return NoteModel(
-            title = data["title"],
-            body = data["body"]
-        )
-    
 
 class NoteSchema(MALLOW.Schema):
     class Meta:

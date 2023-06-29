@@ -19,6 +19,12 @@ class UserModel(DB.Model):
 
     note = DB.relationship("NoteModel")
 
+    def __init__(self, username : str, email : str, password : str):
+        self.username = username
+        self.email = email
+        self.password = password
+
+
     def __repr__(self) -> str:
         return "<User %r>"%self.username
 
@@ -45,6 +51,7 @@ class UserSchema(MALLOW.Schema):
 
     class Meta:
         model : UserModel = UserModel
+        fields = ("username", "email", "bio")
 
     username = fields.String()
     email = fields.String()
