@@ -1,1 +1,1 @@
-from App.app import create_note_app
+from App.app import *

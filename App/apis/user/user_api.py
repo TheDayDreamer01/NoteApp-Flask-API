@@ -1,162 +1,72 @@
-from App.models import UserModel
+from App.models import UserModel, user_schema
 from App.app import DB, BCRYPT
-from flask import (
-    Blueprint,
-    request,
-    jsonify
-)
-from flask_jwt_extended import (
-    jwt_required,
-    unset_jwt_cookies,
-    get_jwt_identity
+
+from flask_jwt_extended import jwt_required
+from flask_restful import (
+    Resource,
+    reqparse,
 )
 
 
-USER_API : Blueprint = Blueprint("USER_API", __name__)
+class UserResource(Resource):
+    def __init__(self):
+        self.password_parser = reqparse.RequestParser()
+        self.password_parser.add_argument("old_password", type=str, required=True)
+        self.password_parser.add_argument("new_password", type=str, required=True)
 
+        self.user_parser = reqparse.RequestParser()
+        self.user_parser.add_argument("username", type=str)
+        self.user_parser.add_argument("bio", type=str)
 
-@USER_API.route("/<int:user_id>/", methods=["GET"])
-@jwt_required()
-def getUserProfile(user_id : int):
-    try:
-        access_token = get_jwt_identity()
-        user : UserModel = UserModel.query.filter_by(
-            id = user_id, email = access_token).first()
-
-        if user:
-            return jsonify({
-                "user" : user.toObject(), 
-                "status" : 200
-            }), 200
+    @jwt_required() 
+    def get(self, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()
+        if not user:
+            return {"message" : "User does not exists"}, 404
         
-    except Exception as e:
-        return jsonify({
-            "error" : e,
-            "message" : "Internal Server Error",
-            "status" : 500
-        }), 500
-            
-    return jsonify({
-        "message" : "User does not Exists",
-        "status" : 404
-    }), 404
+        schema = user_schema.dump(user)
+        return {"user" : schema }, 200
 
-
-@USER_API.route("/<int:user_id>/", methods=["POST"])
-@jwt_required()
-def updateUserPassword(user_id : int):
-    try:
-        access_token = get_jwt_identity()
-        user : UserModel = UserModel.query.filter_by(
-            id = user_id,
-            email = access_token
-        ).first()
-
-        if user:
-            old_password = request.form["old_password"]
-            new_password = request.form["new_password"]
-
-            if BCRYPT.check_password_hash(user.password, old_password):
-                user.password = BCRYPT.generate_password_hash( new_password )
-                DB.session.commit()
-
-                return jsonify({
-                    "message" : "Successfully Updated Password",
-                    "status" : 200
-                }), 200
-            else:
-                return jsonify({
-                    "message" : "Incorrect Password",
-                    "status" : 400
-                }), 400
-            
-    except Exception as e:
-        return jsonify({
-            "error" : e,
-            "message" : "Internal Server Error",
-            "status" : 500
-        }), 500
-        
-    return jsonify({
-        "message" : "User does not Exists",
-        "status" : 404
-    }), 404
-
-
-@USER_API.route("/<int:user_id>/", methods=["PUT"])
-@jwt_required()
-def updateUserProfile(user_id : int):
-    try:
-        access_token = get_jwt_identity()
-        user : UserModel = UserModel.query.filter_by(
-            id = user_id, email = access_token
-        ).first()
-
-        if user:
-            data = request.get_json()
-            name = data["name"]
-            bio = bio["bio"]
-
-            if not name:
-                if len(name) < 4:
-                    return jsonify({
-                        "message" : "Invalid Name",
-                        "status" : 400
-                    }), 400
-                user.name = name
-
-            if not bio:
-                user.bio = bio
-        
-            DB.session.commit()
-            return jsonify({
-                "message" : "Successfully Updated Profile",
-                "status" : 200
-            }), 200
-        
-    except Exception as e:
-        return jsonify({
-            "error" : e,
-            "message" : "Internal Server Error",
-            "status" : 500
-        }), 500
-
-    return jsonify({
-        "message" : "User does not Exists",
-        "status" : 404
-    }), 404
-
-
-@USER_API.route("/<int:user_id>/", methods=["DELETE"])
-@jwt_required()
-def deleteUser(user_id : int):
-    try:
-        access_token = get_jwt_identity()
-        user : UserModel = UserModel.query.filter_by(
-            id = user_id,
-            email = access_token
-        ).first()
-
-        if user:
-            response = jsonify({
-                "message" : "Successfully Deleted User",
-                "status" : 200
-            })
-            unset_jwt_cookies(response)
-            DB.session.delete(user)
-            DB.session.commit()
-
-            return response, 200
-        
-    except Exception as e:
-        return jsonify({
-            "error" : e,
-            "message" : "Internal Server Error",
-            "status" : 500
-        }), 500
     
-    return jsonify({
-        "message" : "User does not Exists",
-        "status" : 404
-    }), 404
+    @jwt_required()
+    def post(self, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()
+        if not user:
+            return {"message" : "User does not Exists"}, 404
+        
+        data = self.password_parser.parse_args()
+
+        if not BCRYPT.check_password_hash(user.password, data["old_password"]):
+            return {"message" : "Incorrect Password"}, 400
+        
+        user.password = BCRYPT.generate_password_hash(data["new_password"])
+        DB.session.commit()
+        return {"message" : "Updated password"}, 200
+        
+    
+    @jwt_required()
+    def put(self, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id = user_id).first()
+        if not user:
+            return {"message" : "User does not exists"}, 404
+        
+        data = self.user_parser.parse_args()
+
+        if data["username"]:
+            user.username = data["bio"]
+        
+        user.bio = data["bio"]
+        DB.session.commit()
+        return {"message" : "Updated Profile"}, 200
+
+
+    @jwt_required()
+    def delete(self, user_id : int):
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()
+        if not user:
+            return {"message" : "User does not exists"}, 404
+        
+        DB.session.delete(user)
+        DB.session.commit()
+        return {"message" : f"User '{user.username}' successfully deleted"}, 200
 

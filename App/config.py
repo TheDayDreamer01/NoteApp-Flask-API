@@ -1,24 +1,37 @@
+from App.utils import secretKeyGenerator
 from datetime import timedelta
 
 
 DB_NAME : str = "note_db"
 
-class Config: 
 
-    """
-    - Uncomment the line below depending on your database preference
-    - Line 22 : SQLite3 Database
-    - Line 23 : MySQL Database
+class ProductionEnvironment:
 
-    By default SQLite3 is used
-    """
+    DEBUG : bool = False
+    JWT_BLACKLIST_ENABLED : bool = True
 
-    SECRET_KEY : str = "HD734HDUF7HDJFI9HJHIDF"
-    JWT_SECRET_KEY : str = "RUER734HHDF89213HUDVVIAWE"
+    SECRET_KEY : str = secretKeyGenerator(20)
+    JWT_SECRET_KEY : str = secretKeyGenerator(20)
 
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
-    
-    SQLALCHEMY_DATABASE_URI : str = f"sqlite:///{DB_NAME}.sqlite3"
-    # SQLALCHEMY_DATABASE_URI : str = f"mysql://<user>:<password>@localhost:3306/{DB_NAME}"
+    SQLALCHEMY_DATABASE_URI : str = f"mysql://<user>:<password>@localhost:3306/{DB_NAME}"
 
-    JWT_EXPIRATION_DELTA : timedelta = timedelta(days=1)
+    JWT_EXPIRATION_DELTA : timedelta = timedelta(days = 1)
+
+
+class DevelopmentEnvironment:
+
+    DEBUG : bool = True
+    JWT_BLACKLIST_ENABLED : bool = True
+
+    SECRET_KEY : str = secretKeyGenerator(10)   
+    JWT_SECRET_KEY : str = secretKeyGenerator(10)
+
+    SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
+    SQLALCHEMY_DATABASE_URI : str = f"sqlite:///{DB_NAME}.sqlite3"
+
+    JWT_EXPIRATION_DELTA : timedelta = timedelta(days = 1)
+
+
+class TestEnvironment:
+    pass
