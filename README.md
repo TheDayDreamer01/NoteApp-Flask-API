@@ -1,92 +1,92 @@
 # NoteApp API
 
-The NoteApp API is a backend API developed in Flask, offering user authentication, user manipulation, and CRUD operations for notes. It is designed to be versatile and can be integrated into mobile, GUI, and web applications.
+This repository contains a simple NoteApp API developed using Python and the Flask framework. It provides basic CRUD (Create, Read, Update, Delete) operations for managing notes. The API is built with the following Python libraries: Flask, Flask-Restful, Flask-SQLAlchemy, Flask-JWT-Extended, Flask-Marshmallow, Flask-Cors, Flask-Bcrypt, and MySQLclient.
 
 ## Features
 
-- User authentication with JWT (JSON Web Tokens) for secure access.
-- User manipulation functionalities, including:
-  - Retrieving user information.
-  - Deleting user accounts.
-  - Updating user profiles.
-  - Updating user passwords.
-- CRUD operations for notes, including:
-  - Retrieving notes.
-  - Creating new notes.
-  - Updating existing notes.
-  - Deleting notes.
+- User authentication and authorization
+- User management (update password, get user information, update user information, delete user account)
+- Note management (create note, get all notes of a user, get specific note information, update note, delete note)
+- Unit testing
 
-## Technologies Used
+## Prerequisites
 
-- Flask: A micro web framework for Python.
-- JWT (JSON Web Tokens): Used for user authentication and authorization.
-- SQLAlchemy: A powerful SQL toolkit and Object-Relational Mapping (ORM) library.
-- Bcrypt: A password-hashing library for secure password storage.
-- CORS (Cross-Origin Resource Sharing): Enables cross-origin resource sharing in the API.
-- SQLite3 or MySQL: Choose the database backend based on user preference (by default SQLite3 is used).
+To run this API locally, you need to have the following dependencies installed:
+
+- Python (version >= 3.6)
+- Flask (version >= 2.0.0)
+- Flask-SQLAlchemy
+- Flask-JWT-Extended
+- Flask-Marshmallow
+- Flask-Cors
+- Flask-Bcrypt
+- MySQLclient
 
 ## Installation
 
-1. Clone the repository:
-
+1. Clone this repository to your local machine.
    ```bash
    git clone https://github.com/TheDayDreamer01/NoteApp-Flask-API.git
    ```
-
-2. Navigate to the project directory:
-
+2. Change into the project's directory.
    ```bash
-   cd NoteApp
+   cd noteapp-flask-api
    ```
-
-3. Install the required dependencies:
-
+3. (Optional) Create a virtual environment.
+   ```bash
+   virtualenv env
+   source venv/bin/activate
+   ```
+4. Install the required dependencies.
    ```bash
    pip install -r requirements.txt
    ```
-
-4. Configure the database backend:
-
-   - Open the `App/config.py` file.
-   - Choose between SQLite3 or MySQL based on your preference.
-   - Update the necessary configuration details (e.g., database credentials).
-
-5. Run the application:
-
+5. Start the API server.
    ```bash
-   python main.py
+   python server.py
    ```
 
-   The API should now be accessible at `http://localhost:5000`.
+By default, the API will use SQLite3 as the database for the development and testing environment. If you want to use MySQL for the production environment, please update the database configuration accordingly in the `./App/config.py`.
 
-## API Usage
+## API Routes
 
-To interact with the NoteApp API, you can use various HTTP methods (GET, POST, PUT, DELETE) and the provided endpoints. Here are some example endpoints:
+The following routes are available in the NoteApp API:
 
-- User Authentication:
-  - `POST /api/auth/signin/`: Sign in with email and password.
-  - `POST /api/auth/signup/`: Sign up with username, email and password.
-  - `GET /api/auth/signout/`: Sign out the current user.
+### Authentication
 
-- User Manipulation:
-  - `GET /api/user/{user_id}/`: Retrieve user information.
-  - `PUT /api/user/{user_id}/`: Update user profile.
-  - `PUT /api/user/{user_id}/`: Update user password.
-  - `DELETE /api/user/{user_id}/`: Delete user account.
+- `POST /api/auth/signin`: Login a user
+- `POST /api/auth/signup`: Sign up a user
+- `POST /api/auth/signout`: Sign out the current user
+- `POST /api/auth/refresh`: Refresh access token using refresh token
+- `POST /api/auth/refresh/signout`: Sign out using the refresh token
 
-- Note Operations:
-  - `GET /api/note/`: Retrieve all notes.
-  - `POST /api/note/`: Create a new note.
-  - `GET /api/note/{note_id}/{title}/`: Retrieve a specific note.
-  - `PUT /api/note/{note_id}/{title}/`: Update a specific note.
-  - `DELETE /api/note/{note_id}/{title}/`: Delete a specific note.
+### User Management
 
-Please refer to the API documentation or explore the codebase for more detailed information on the available endpoints and their usage.
+- `POST /api/user/<user_id>`: Update user password
+- `GET /api/user/<user_id>`: Get current user information
+- `PUT /api/user/<user_id>`: Update basic information of the user
+- `DELETE /api/user/<user_id>`: Delete the user account
 
-## Contribution
+### Note Management
 
-Contributions to the NoteApp API are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+- `GET /api/note/<user_id>`: Get all notes of the current user
+- `POST /api/note/<user_id>`: Create a new note
+- `GET /api/note/<note_id>/<note_title>/<user_id>`: Get specific information of a note
+- `PUT /api/note/<note_id>/<note_title>/<user_id>`: Update a note
+- `DELETE /api/note/<note_id>/<note_title>/<user_id>`: Delete a note
+
+## Unit Testing
+
+Unit tests for the NoteApp API are located in the `Test` directory. To run the tests, execute the following command:
+
+```shell
+python -m unittest discover -s Test
+```
+
+## Contributing
+
+Contributions to this NoteApp API are welcome! If you find any issues or want to suggest improvements, please create a new issue or submit a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the [MIT License](LICENSE). Feel free to use and modify the code as per your needs.
