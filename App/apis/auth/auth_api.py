@@ -1,7 +1,12 @@
 from App.models import UserModel, TokenModel
 from App.app import DB, BCRYPT
+from App.utils import isValidEmail
 
-from flask_restful import Resource, reqparse, abort
+from flask_restful import (
+    Resource, 
+    reqparse, 
+    abort
+)
 from flask_jwt_extended import (
     create_refresh_token,
     create_access_token,
@@ -22,10 +27,13 @@ class SignInResource(Resource):
     def post(self):
         data = self.parser.parse_args()
 
+        if not isValidEmail(data["email"]):
+            abort(401, message="Invalid Email Address")
+
         user : UserModel = UserModel.query.filter_by(email = data["email"]).first()
         if user:
             if not BCRYPT.check_password_hash(user.password, data["password"]):
-                return {"message": "Incorrect Password"}, 401
+                abort(401, message="Incorrect Password")
             
             access_token = create_access_token(identity=user.email)  
             refresh_token = create_refresh_token(identity=user.email)  
@@ -37,7 +45,7 @@ class SignInResource(Resource):
                 "user" : user.toObject()
             }, 200
             
-        return {"message" : "User does not Exists"}, 404
+        abort(404, mesage="User does not Exists")
             
 
 class SignUpResource(Resource):
@@ -52,13 +60,22 @@ class SignUpResource(Resource):
     def post(self):
         data = self.parser.parse_args()
 
+        if not isValidEmail(data["email"]):
+            abort(401, message="Invalid Email Address")
+
         user : UserModel = UserModel.query.filter_by(
             username = data["username"],
             email = data["email"]
         ).first()
 
         if user:    
-            return abort(409, message="User already exists") 
+            abort(409, message="User already exists") 
+
+        if len(data["username"]) < 4:
+            abort(401, message="Username must at least be 4 characters long")
+
+        if len(data["password"]) < 6:
+            abort(401, message="Password must at least be 6 characters long")
 
         user = UserModel(
             username = data["username"],
@@ -93,7 +110,7 @@ class SignOutResource(Resource):
             return {"message" : "Successfully logged out"}, 200
     
         except Exception as e:
-            return {"message" : e}, 500
+            abort(500, message=e)
     
 
 class SignOutRefreshResource(Resource):
@@ -109,7 +126,7 @@ class SignOutRefreshResource(Resource):
             return {"message" : "Successfully logged out"}, 200
     
         except Exception as e:
-            return {"message" : e}, 500
+            abort(500, message=e)
         
 
 class RefreshTokenResource(Resource):

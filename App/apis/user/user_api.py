@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required
 from flask_restful import (
     Resource,
     reqparse,
+    abort
 )
 
 
@@ -22,7 +23,7 @@ class UserResource(Resource):
     def get(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         schema = user_schema.dump(user)
         return {"user" : schema }, 200
@@ -32,12 +33,15 @@ class UserResource(Resource):
     def post(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return {"message" : "User does not Exists"}, 404
+            abort(404, message="User does not exists")
         
         data = self.password_parser.parse_args()
 
         if not BCRYPT.check_password_hash(user.password, data["old_password"]):
-            return {"message" : "Incorrect Password"}, 400
+            abort(400, message="Incorrect Password")
+
+        if len(data["old_password"]) < 6:
+            abort(401, message="Password must at least be 6 characters long")
         
         user.password = BCRYPT.generate_password_hash(data["new_password"])
         DB.session.commit()
@@ -48,11 +52,14 @@ class UserResource(Resource):
     def put(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         data = self.user_parser.parse_args()
 
         if data["username"]:
+            if len(data["username"]) < 4:
+                abort(401, message="Username must at least be 4 characters long")
+
             user.username = data["bio"]
         
         user.bio = data["bio"]
@@ -64,7 +71,7 @@ class UserResource(Resource):
     def delete(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         DB.session.delete(user)
         DB.session.commit()

@@ -10,6 +10,7 @@ from flask_jwt_extended import jwt_required
 from flask_restful import (
     Resource,
     reqparse,
+    abort 
 )
 
 
@@ -24,7 +25,7 @@ class NoteResource(Resource):
     def get(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
-            return {"User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(user_id = user_id).all()
         if not note:
@@ -37,15 +38,18 @@ class NoteResource(Resource):
     def post(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         data = self.parser.parse_args()
+
+        if not data["title"]:
+            abort(401, message="Title must not be empty")
 
         note : NoteModel = NoteModel.query.filter_by(
             user_id = user_id, title = data["title"] ).first()
         
         if note:
-            return {"message" : "Note already exists"}, 404
+            abort(404, message="Note already exists")
         
         note = NoteModel(
             user_id = user_id,
@@ -69,14 +73,14 @@ class UserNoteResource(Resource):
     def get(self, note_id : int, note_title, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
         ).first()
 
         if not note:
-            return {"message" : "Note does not exists"}, 404
+            abort(404, message="Note does not exists")
         
         schema = note_schema.dump(note)
         return {"note" : schema}, 200
@@ -86,13 +90,13 @@ class UserNoteResource(Resource):
     def put(self, note_id : int, note_title, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
         ).first()
         if not note:
-            return {"message" : "Note does not exists"}, 404
+            abort(404, message="Note does not exists")
         
         data = self.parser.parse_args()
         
@@ -110,13 +114,13 @@ class UserNoteResource(Resource):
     def delete(self, note_id : int, note_title, user_id : int):
         user : UserModel = UserModel.query.filter_by(id = user_id).first()
         if not user:
-            return {"message" : "User does not exists"}, 404
+            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
         ).first()
         if not note:
-            return {"message" : "Note does not exists"}, 404
+            abort(404, message="Note does not exists")
         
         DB.session.delete(note)
         DB.session.commit()
