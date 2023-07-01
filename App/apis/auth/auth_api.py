@@ -1,6 +1,5 @@
 from App.models import UserModel, TokenModel
 from App.app import DB, BCRYPT
-from datetime import timedelta
 
 from flask_restful import Resource, reqparse, abort
 from flask_jwt_extended import (

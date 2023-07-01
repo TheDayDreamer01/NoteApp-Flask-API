@@ -36,6 +36,7 @@ class NoteModel(DB.Model):
 class NoteSchema(MALLOW.Schema):
     class Meta:
         model : NoteModel = NoteModel
+        fields : tuple = ("id", "title", "body", "date") 
 
     title = fields.String()
     body = fields.String()

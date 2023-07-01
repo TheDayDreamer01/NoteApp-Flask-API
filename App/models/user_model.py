@@ -51,7 +51,7 @@ class UserSchema(MALLOW.Schema):
 
     class Meta:
         model : UserModel = UserModel
-        fields = ("username", "email", "bio")
+        fields : tuple = ("id", "username", "email", "bio")
 
     username = fields.String()
     email = fields.String()
