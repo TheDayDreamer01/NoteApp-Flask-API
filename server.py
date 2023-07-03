@@ -1,27 +1,33 @@
 from App import create_note_app
 from flask import Flask
-from App.config import (
+from Config import (
     ProductionEnvironment,
     DevelopmentEnvironment,
     TestEnvironment
 )
 
 
-config : object = None
-environment : str = "DEVELOPMENT"
+ENVIRONMENT : str = "DEVELOPMENT"
+config : object = DevelopmentEnvironment()
 
-match environment:
-    case "DEVELOPMENT":
-        config = DevelopmentEnvironment()
-
+match ENVIRONMENT:
     case "PRODUCTION":
         config = ProductionEnvironment()
 
     case "TESTING":
         config =  TestEnvironment()
 
+    case _:
+        config = DevelopmentEnvironment()
+
 
 app : Flask = create_note_app(config)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    
+    match ENVIRONMENT:
+        case "PRODUCTION": 
+            app.run()
+
+        case _:
+            app.run(debug=True, host="0.0.0.0")
