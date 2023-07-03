@@ -58,8 +58,9 @@ class NoteResource(Resource):
         )   
         DB.session.add(note)
         DB.session.commit()
-    
-        return {"note" : note.toObject()}, 200 
+
+        schema = note_schema.dump(note)
+        return {"message" : "Successfully created", "note" : schema}, 200 
     
 
 class UserNoteResource(Resource):
@@ -107,7 +108,9 @@ class UserNoteResource(Resource):
             note.body = data["body"]
 
         DB.session.commit()
-        return {"message" : "Update note successfully"}, 200
+
+        schema = note_schema.dump(note)
+        return {"message" : "Update note successfully", "note" : schema}, 200
 
 
     @jwt_required()

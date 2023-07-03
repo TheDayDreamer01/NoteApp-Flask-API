@@ -16,8 +16,6 @@ class ProductionEnvironment:
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     SQLALCHEMY_DATABASE_URI : str = f"mysql://root:data@localhost:3306/{DB_NAME}"
     
-
-
     JWT_EXPIRATION_DELTA : timedelta = timedelta(days = 1)
 
 

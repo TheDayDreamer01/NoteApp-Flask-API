@@ -26,7 +26,6 @@ class NoteModel(DB.Model):
     def toObject(self) -> dict:
         return {
             "id" : self.id,
-            "user_id" : self.user_id, 
             "title" : self.title,
             "date" : self.date,
             "body" : self.body
