@@ -13,7 +13,7 @@ This repository contains a simple NoteApp API developed using Python and the Fla
 
 To run this API locally, you need to have the following dependencies installed:
 
-- Python (version >= 3.6)
+- Python (version >= 3.10.0)
 - Flask (version >= 2.0.0)
 - Flask-SQLAlchemy
 - Flask-JWT-Extended
