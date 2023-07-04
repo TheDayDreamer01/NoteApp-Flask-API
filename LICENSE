@@ -1,5 +1,7 @@
 MIT License
 
+Copyright (c) 2023 Lirae Que Data
+
 NoteApp API
 This repository contains a simple API for a note-taking application. It provides basic CRUD (Create, Read, Update, Delete) operations for managing notes. The API is developed using Python with the Flask framework, along with various Flask extensions such as Flask-SQLAlchemy, Flask-JWT-Extended, Flask-Marshmallow, Flask-Cors, Flask-Bcrypt, and mysqlclient. The development and testing environment use SQLite3, while the production environment uses MySQL. Unit testing is included in the Test directory.
 
