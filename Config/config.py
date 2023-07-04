@@ -1,4 +1,4 @@
-from App.utils import secretKeyGenerator
+from App.utils import keyGenerator
 from datetime import timedelta
 
 
@@ -10,8 +10,8 @@ class ProductionEnvironment:
     DEBUG : bool = False
     JWT_BLACKLIST_ENABLED : bool = True
 
-    SECRET_KEY : str = secretKeyGenerator(20)
-    JWT_SECRET_KEY : str = secretKeyGenerator(20)
+    SECRET_KEY : str = keyGenerator(20)
+    JWT_SECRET_KEY : str = keyGenerator(20)
 
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     SQLALCHEMY_DATABASE_URI : str = f"mysql://root:data@localhost:3306/{DB_NAME}"
@@ -24,8 +24,8 @@ class DevelopmentEnvironment:
     DEBUG : bool = True
     JWT_BLACKLIST_ENABLED : bool = True
 
-    SECRET_KEY : str = secretKeyGenerator(10)   
-    JWT_SECRET_KEY : str = secretKeyGenerator(10)
+    SECRET_KEY : str = keyGenerator(10)   
+    JWT_SECRET_KEY : str = keyGenerator(10)
 
     SQLALCHEMY_TRACK_MODIFICATIONS : bool = False
     SQLALCHEMY_DATABASE_URI : str = f"sqlite:///{DB_NAME}.sqlite3"

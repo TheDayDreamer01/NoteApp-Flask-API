@@ -1,17 +1,18 @@
-from App.app import DB
+from App import DB
 from App.models import (
     NoteModel, 
     UserModel, 
     notes_schema,
-    note_schema
+    note_schema,
 )
 
 from flask_jwt_extended import jwt_required
 from flask_restful import (
     Resource,
     reqparse,
-    abort 
+    abort,
 )
+
 
 
 class NoteResource(Resource):
@@ -23,6 +24,7 @@ class NoteResource(Resource):
 
     @jwt_required()
     def get(self, user_id : int):
+
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
         if not user:
             abort(404, message="User does not exists")

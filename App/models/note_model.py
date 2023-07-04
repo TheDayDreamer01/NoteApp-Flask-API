@@ -1,6 +1,6 @@
 from marshmallow import fields
-from App.app import DB, MALLOW
-from sqlalchemy.sql import func
+from App import DB, MALLOW
+
 
 class NoteModel(DB.Model):
     __tablename__ = "notes"
@@ -11,8 +11,8 @@ class NoteModel(DB.Model):
     title = DB.Column(DB.String(100))
     body = DB.Column(DB.Text)
     date = DB.Column(
-        DB.DateTime(timezone=True),
-        default = func.now()
+        DB.Date,
+        default = DB.func.current_date()
     )
 
     def __init__(self, user_id : int, title : str, body : str):

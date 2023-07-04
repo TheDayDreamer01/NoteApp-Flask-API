@@ -1,6 +1,5 @@
 from marshmallow import fields
-from App.app import DB, MALLOW
-from sqlalchemy.sql import func
+from App import DB, MALLOW
 
 
 class UserModel(DB.Model):
@@ -12,8 +11,8 @@ class UserModel(DB.Model):
     email = DB.Column(DB.String(100), nullable=False, unique=True)
     password = DB.Column(DB.String(100), nullable=False)
     date = DB.Column(
-        DB.DateTime(timezone=True), 
-        default=func.now()
+        DB.Date, 
+        default=DB.func.current_date()
     )
     bio = DB.Column(DB.Text, nullable=True)
 

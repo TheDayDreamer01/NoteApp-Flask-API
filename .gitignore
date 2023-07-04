@@ -10,3 +10,5 @@ App/utils/__pycache__
 App/apis/note/__pycache__
 App/apis/auth/__pycache__
 App/apis/user/__pycache__
+
+Config/__pycache__

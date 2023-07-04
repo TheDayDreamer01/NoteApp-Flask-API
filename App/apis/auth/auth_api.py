@@ -1,6 +1,6 @@
 from App.models import UserModel, TokenModel
-from App.app import DB, BCRYPT
 from App.utils import isValidEmail
+from App import DB, BCRYPT
 
 from flask_restful import (
     Resource, 
