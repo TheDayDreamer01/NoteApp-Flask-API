@@ -1,4 +1,5 @@
 from App.models import UserModel, user_schema
+from App.utils import jwt_is_blacklist, auth_required
 from App import DB, BCRYPT
 
 from flask_jwt_extended import jwt_required
@@ -20,21 +21,21 @@ class UserResource(Resource):
         self.user_parser.add_argument("bio", type=str)
 
     @jwt_required() 
+    @jwt_is_blacklist
+    @auth_required
     def get(self, user_id : int):
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
-        
         schema = user_schema.dump(user)
         return {"user" : schema }, 200
 
     
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def post(self, user_id : int):
+
         user : UserModel = UserModel.query.filter_by(id=user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
-        
+                
         data = self.password_parser.parse_args()
 
         if not BCRYPT.check_password_hash(user.password, data["old_password"]):
@@ -49,10 +50,11 @@ class UserResource(Resource):
         
     
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def put(self, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
+        
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()
         
         data = self.user_parser.parse_args()
 
@@ -68,11 +70,11 @@ class UserResource(Resource):
 
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def delete(self, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id=user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
-        
+
+        user : UserModel = UserModel.query.filter_by(id=user_id).first()        
         DB.session.delete(user)
         DB.session.commit()
         return {"message" : f"User '{user.username}' successfully deleted"}, 200

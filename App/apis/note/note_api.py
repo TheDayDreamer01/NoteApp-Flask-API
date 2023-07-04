@@ -1,7 +1,7 @@
 from App import DB
+from App.utils import jwt_is_blacklist, auth_required
 from App.models import (
-    NoteModel, 
-    UserModel, 
+    NoteModel,
     notes_schema,
     note_schema,
 )
@@ -14,7 +14,6 @@ from flask_restful import (
 )
 
 
-
 class NoteResource(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
@@ -23,12 +22,10 @@ class NoteResource(Resource):
 
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def get(self, user_id : int):
 
-        user : UserModel = UserModel.query.filter_by(id=user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
-        
         note : NoteModel = NoteModel.query.filter_by(user_id = user_id).all()
         if not note:
             return {}
@@ -37,11 +34,10 @@ class NoteResource(Resource):
 
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def post(self, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
-        
+
         data = self.parser.parse_args()
 
         if not data["title"]:
@@ -73,10 +69,9 @@ class UserNoteResource(Resource):
 
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def get(self, note_id : int, note_title, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
@@ -90,10 +85,9 @@ class UserNoteResource(Resource):
     
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def put(self, note_id : int, note_title, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title
@@ -116,10 +110,9 @@ class UserNoteResource(Resource):
 
 
     @jwt_required()
+    @jwt_is_blacklist
+    @auth_required
     def delete(self, note_id : int, note_title, user_id : int):
-        user : UserModel = UserModel.query.filter_by(id = user_id).first()
-        if not user:
-            abort(404, message="User does not exists")
         
         note : NoteModel = NoteModel.query.filter_by(
             id = note_id, user_id = user_id, title = note_title

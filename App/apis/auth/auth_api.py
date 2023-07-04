@@ -1,6 +1,10 @@
 from App.models import UserModel, TokenModel
-from App.utils import isValidEmail
 from App import DB, BCRYPT
+from App.utils import (
+    isValidEmail, 
+    jwt_is_blacklist, 
+    auth_required
+)
 
 from flask_restful import (
     Resource, 
@@ -99,6 +103,7 @@ class SignUpResource(Resource):
 class SignOutResource(Resource):
 
     @jwt_required(optional=True)
+    @jwt_is_blacklist
     def post(self):
         try:    
             access_token = get_jwt()["jti"]
@@ -116,6 +121,7 @@ class SignOutResource(Resource):
 class SignOutRefreshResource(Resource):
 
     @jwt_required(refresh=True)
+    @jwt_is_blacklist
     def post(self):
         try:
             access_token = get_jwt()["jti"]
@@ -132,6 +138,7 @@ class SignOutRefreshResource(Resource):
 class RefreshTokenResource(Resource):
     
     @jwt_required(refresh=True)
+    @jwt_is_blacklist
     def post(self):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user)
