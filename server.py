@@ -7,7 +7,7 @@ from Config import (
 )
 
 
-ENVIRONMENT : str = "DEVELOPMENT"
+ENVIRONMENT : str = "PRODUCTION"
 config : object = DevelopmentEnvironment()
 
 match ENVIRONMENT:
